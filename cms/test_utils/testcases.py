@@ -3,7 +3,8 @@ from cms.models import Page
 from cms.test_utils.util.context_managers import (UserLoginContext,
     SettingsOverride)
 from django.conf import settings
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -96,9 +97,9 @@ class CMSTestCase(testcases.TestCase):
 
     def get_superuser(self):
         try:
-            admin = User.objects.get(username="admin")
-        except User.DoesNotExist:
-            admin = User(username="admin", is_staff=True, is_active=True, is_superuser=True)
+            admin = get_user_model().objects.get(username="admin")
+        except get_user_model().DoesNotExist:
+            admin = get_user_model()(username="admin", is_staff=True, is_active=True, is_superuser=True)
             admin.set_password("admin")
             admin.save()
         return admin
@@ -107,7 +108,7 @@ class CMSTestCase(testcases.TestCase):
         """
         Used in security tests
         """
-        staff = User(username="staff", is_staff=True, is_active=True)
+        staff = get_user_model()(username="staff", is_staff=True, is_active=True)
         staff.set_password("staff")
         staff.save()
         return staff
