@@ -109,6 +109,8 @@ class Page(MPTTModel):
         if title is None:
             title = u""
         return unicode(title)
+    def __repr__(self):
+        return u"Page"
 
     def __repr__(self):
         # This is needed to solve the infinite recursion when
