@@ -9,6 +9,7 @@ import django
 from django import forms
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
 from django.forms.models import ModelForm
