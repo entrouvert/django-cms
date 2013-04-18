@@ -7,6 +7,7 @@ from cms.utils import get_cms_setting
 from cms.utils.i18n import get_fallback_languages
 from django.contrib.sites.models import Site
 from django.db import models
+from django.contrib.auth import get_user_model
 from django.db.models import Q
 
 
@@ -224,7 +225,9 @@ class BasicPagePermissionManager(models.Manager):
         """Get all objects for given user, also takes look if user is in some
         group.
         """
-        return self.filter(Q(user=user) | Q(group__user=user))
+        User = get_user_model()
+        related_query_name = User.groups.field.related_query_name()
+        return self.filter(Q(user=user) | Q(**{'group__%s' % related_query_name: user}))
 
     def with_can_change_permissions(self, user):
         """Set of objects on which user haves can_change_permissions. !But only

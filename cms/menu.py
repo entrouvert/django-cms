@@ -13,10 +13,12 @@ from cms.utils.moderator import get_title_queryset
 from cms.utils.plugins import current_site
 from menus.base import Menu, NavigationNode, Modifier
 from menus.menu_pool import menu_pool
+from compat import get_user_set
 
 from django.contrib.sites.models import Site
 from django.db.models.query_utils import Q
 from django.utils.translation import get_language
+from django.contrib.auth import get_user_model
 
 
 def get_visible_pages(request, pages, site=None):
@@ -33,7 +35,9 @@ def get_visible_pages(request, pages, site=None):
     is_auth_user = request.user.is_authenticated()
     visible_page_ids = []
     restricted_pages = defaultdict(list)
-    page_permissions = PagePermission.objects.filter(can_view=True).select_related('page', 'group__users')
+    User = get_user_model()
+    related_query_name = User.groups.field.related_query_name()
+    page_permissions = PagePermission.objects.filter(can_view=True).select_related('page', 'group__%s' % related_query_name)
 
     for perm in page_permissions:
 
@@ -73,7 +77,7 @@ def get_visible_pages(request, pages, site=None):
     # authenticated user and global permission
     if is_auth_user:
         global_page_perm_q = Q(
-            Q(user=request.user) | Q(group__user=request.user)
+                Q(user=request.user) | Q(**{'group__%s' % related_query_name: request.user})
         ) & Q(can_view=True) & Q(Q(sites__in=[site.pk]) | Q(sites__isnull=True))
         global_view_perms = GlobalPagePermission.objects.filter(global_page_perm_q).exists()
 
@@ -110,7 +114,7 @@ def get_visible_pages(request, pages, site=None):
                 has_perm = True
             if not perm.group_id:
                 continue
-            group_user_ids = perm.group.user_set.values_list('pk', flat=True)
+            group_user_ids = get_user_set(perm.group).values_list('pk', flat=True)
             if user_pk in group_user_ids:
                 has_perm = True
         return has_perm

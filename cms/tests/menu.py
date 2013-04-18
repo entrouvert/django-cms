@@ -16,7 +16,7 @@ from cms.utils import get_cms_setting
 from cms.utils.i18n import force_language
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Permission, Group
-from cms.compat import User
+from cms.compat import User, get_user_set
 from django.contrib.sites.models import Site
 from django.template import Template, TemplateSyntaxError
 from django.utils.translation import activate
@@ -25,7 +25,6 @@ from menus.menu_pool import menu_pool, _build_nodes_inner_for_one_menu
 from menus.models import CacheKey
 from menus.utils import mark_descendants, find_selected, cut_levels
 from django.utils.unittest.case import skipUnless
-
 
 
 class BaseMenuTest(SettingsOverrideTestCase):
@@ -1081,7 +1080,7 @@ class ViewPermissionMenuTests(SettingsOverrideTestCase):
         with SettingsOverride(CMS_PUBLIC_FOR='staff'):
             user = User.objects.create_user('user', 'user@domain.com', 'user')
             group = Group.objects.create(name='testgroup')
-            group.user_set.add(user)
+            get_user_set(group).add(user)
             request = self.get_request(user)
             page = create_page('A', 'nav_playground.html', 'en')
             PagePermission.objects.create(can_view=True, group=group, page=page)
@@ -1093,7 +1092,7 @@ class ViewPermissionMenuTests(SettingsOverrideTestCase):
         with SettingsOverride(CMS_PUBLIC_FOR='staff'):
             user = User.objects.create_user('user', 'user@domain.com', 'user')
             group = Group.objects.create(name='testgroup')
-            group.user_set.add(user)
+            get_user_set(group).add(user)
             request = self.get_request(user)
             page = create_page('A', 'nav_playground.html', 'en')
             PagePermission.objects.create(can_view=True, group=group, page=page)

@@ -3,7 +3,7 @@ from __future__ import with_statement
 
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import AnonymousUser, Group
-from cms.compat import User
+from cms.compat import User, get_user_set
 
 from cms.api import create_page
 from cms.menu import get_visible_pages
@@ -144,7 +144,7 @@ class ViewPermissionTests(SettingsOverrideTestCase):
             user.save()
             if groupname:
                 group, _ = Group.objects.get_or_create(name=groupname)
-                group.user_set.add(user)
+                get_user_set(group).add(user)
                 group.save()
 
         self.assertEquals(11, User.objects.all().count())
@@ -533,7 +533,7 @@ class ViewPermissionTreeBugTests(ViewPermissionTests):
         user.set_password(user.username)
         user.save()
         group = Group.objects.create(name=self.GROUPNAME_6)
-        group.user_set.add(user)
+        get_user_set(group).add(user)
         group.save()
 
     def _setup_permviewbug(self):

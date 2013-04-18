@@ -8,6 +8,7 @@ from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import get_user_model
 
 from cms.compat import User
 
@@ -202,6 +203,8 @@ def get_subordinate_users(user):
         return User.objects.all()
     site = Site.objects.get_current()
     page_id_allow_list = Page.permissions.get_change_permissions_id_list(user, site)
+    User = get_user_model()
+    related_query_name = User.groups.field.related_query_name
     try:
         user_level = get_user_permission_level(user)
     except NoPermissionsException:
@@ -211,7 +214,7 @@ def get_subordinate_users(user):
                 Q(pageuser__created_by=user) &
                 Q(pagepermission__page=None)
         )
-        qs = qs.exclude(pk=user.id).exclude(groups__user__pk=user.id)
+        qs = qs.exclude(pk=user.id).exclude(**{'groups__%s__pk' % related_query_name: user.id})
         return qs
     # normal query
     qs = User.objects.distinct().filter(
@@ -219,7 +222,7 @@ def get_subordinate_users(user):
         (Q(pagepermission__page__id__in=page_id_allow_list) & Q(pagepermission__page__level__gte=user_level))
         | (Q(pageuser__created_by=user) & Q(pagepermission__page=None))
     )
-    qs = qs.exclude(pk=user.id).exclude(groups__user__pk=user.id)
+    qs = qs.exclude(pk=user.id).exclude(**{'groups__%s__pk' % related_query_name: user.id})
     return qs
 
 def get_subordinate_groups(user):
@@ -294,7 +297,9 @@ def get_user_sites_queryset(user):
             # so he haves access to all sites
             return qs
     # add some pages if he has permission to add / change them
-    query |= Q(Q(page__pagepermission__user=user) | Q(page__pagepermission__group__user=user)) & \
+    User = get_user_model()
+    related_query_name = User.groups.field.related_query_name
+    query |= Q(Q(**{'page__pagepermission__%s' % related_query_name: user}) | Q(**{'page__pagepermission__group__%s' % related_query_name: user})) & \
         (Q(Q(page__pagepermission__can_add=True) | Q(page__pagepermission__can_change=True)))
     return qs.filter(query).distinct()
 

@@ -8,6 +8,7 @@ from cms.cache.permissions import clear_user_permission_cache, clear_permission_
 from cms.models import Page, Title, CMSPlugin, PagePermission, GlobalPagePermission, PageUser, PageUserGroup
 
 from menus.menu_pool import menu_pool
+from .compat import get_user_set
 
 # fired after page location is changed - is moved from one node to other
 page_moved = Signal(providing_args=["instance"])
@@ -223,12 +224,12 @@ def pre_delete_user(instance, **kwargs):
 
 def pre_save_group(instance, raw, **kwargs):
     if instance.pk:
-        for user in instance.user_set.all():
+        for user in get_user_set(instance).all():
             clear_user_permission_cache(user)
 
 
 def pre_delete_group(instance, **kwargs):
-    for user in instance.user_set.all():
+    for user in get_user_set(instance).all():
         clear_user_permission_cache(user)
 
 
@@ -236,7 +237,7 @@ def _clear_users_permissions(instance):
     if instance.user:
         clear_user_permission_cache(instance.user)
     if instance.group:
-        for user in instance.group.user_set.all():
+        for user in get_user_set(instance.group).all():
             clear_user_permission_cache(user)
 
 
