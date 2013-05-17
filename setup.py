@@ -16,11 +16,42 @@ CLASSIFIERS = [
     'Topic :: Software Development :: Libraries :: Application Frameworks',
 ]
 
+def get_version():
+    import glob
+    import re
+    import os
+
+    version = None
+    for d in glob.glob('*'):
+        if not os.path.isdir(d):
+            continue
+        module_file = os.path.join(d, '__init__.py')
+        if not os.path.exists(module_file):
+            continue
+        for v in re.findall("""__version__ *= *['"](.*)['"]""",
+                open(module_file).read()):
+            assert version is None
+            version = v
+        if version:
+            break
+    assert version is not None
+    if os.path.exists('.git'):
+        import subprocess
+        p = subprocess.Popen(['git','describe','--dirty','--match=v*'],
+                stdout=subprocess.PIPE)
+        result = p.communicate()[0]
+        assert p.returncode == 0, 'git returned non-zero'
+        new_version = result.split()[0][1:]
+        assert not new_version.endswith('-dirty'), 'git workdir is not clean'
+        assert new_version.split('-')[0] == version, '__version__ must match the last git annotated tag'
+        version = new_version.replace('-', '.')
+    return version
+
 setup(
     author="Patrick Lauber",
     author_email="digi@treepy.com",
     name='django-cms',
-    version=cms.__version__,
+    version=get_version(),
     description='An Advanced Django CMS',
     long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
     url='https://www.django-cms.org/',
