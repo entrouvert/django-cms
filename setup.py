@@ -37,7 +37,7 @@ def get_version():
     assert version is not None
     if os.path.exists('.git'):
         import subprocess
-        p = subprocess.Popen(['git','describe','--dirty','--match=v*'],
+        p = subprocess.Popen(['git','describe','--dirty'],
                 stdout=subprocess.PIPE)
         result = p.communicate()[0]
         assert p.returncode == 0, 'git returned non-zero'
