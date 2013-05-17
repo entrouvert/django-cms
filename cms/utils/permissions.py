@@ -8,9 +8,8 @@ from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth import get_user_model
 
-from cms.compat import User
+from cms.compat import get_user_model
 
 
 try:
@@ -198,12 +197,12 @@ def get_subordinate_users(user):
 
     # TODO: try to merge with PagePermissionManager.subordinate_to_user()
 
+    User = get_user_model()
     if user.is_superuser or \
             GlobalPagePermission.objects.with_can_change_permissions(user):
         return User.objects.all()
     site = Site.objects.get_current()
     page_id_allow_list = Page.permissions.get_change_permissions_id_list(user, site)
-    User = get_user_model()
     related_query_name = User.groups.field.related_query_name
     try:
         user_level = get_user_permission_level(user)

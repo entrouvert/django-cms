@@ -13,12 +13,11 @@ from cms.utils.moderator import get_title_queryset
 from cms.utils.plugins import current_site
 from menus.base import Menu, NavigationNode, Modifier
 from menus.menu_pool import menu_pool
-from compat import get_user_set
+from compat import get_user_set, get_user_model
 
 from django.contrib.sites.models import Site
 from django.db.models.query_utils import Q
 from django.utils.translation import get_language
-from django.contrib.auth import get_user_model
 
 
 def get_visible_pages(request, pages, site=None):
