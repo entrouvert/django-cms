@@ -5,10 +5,7 @@ from django.conf import settings
 
 from django.contrib.auth.models import Group
 from django.contrib.sites.models import Site
-try:
-    from django.contrib.auth.models import AbstractUser as User
-except ImportError:
-    from django.contrib.auth.models import User
+from cms.compat import get_user_model
 
 from cms.models import Page
 from cms.models.managers import BasicPagePermissionManager, PagePermissionManager
@@ -108,7 +105,7 @@ class PagePermission(AbstractPagePermission):
         return "%s :: %s has: %s" % (page, self.audience, unicode(dict(ACCESS_CHOICES)[self.grant_on]))
 
 
-class PageUser(User):
+class PageUser(get_user_model()):
     """Cms specific user data, required for permission system
     """
     created_by = models.ForeignKey(AUTH_USER_MODEL, related_name="created_users")

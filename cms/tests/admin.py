@@ -22,7 +22,7 @@ import django
 from django.contrib import admin
 from django.contrib.admin.sites import site
 from django.contrib.auth.models import Permission, AnonymousUser
-from cms.compat import User
+from cms.compat import get_user_model
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import (Http404, HttpResponseBadRequest, HttpResponseForbidden,
@@ -45,7 +45,7 @@ class AdminTestsBase(CMSTestCase):
             return admin
         USERNAME = 'test'
 
-        normal_guy = User.objects.create_user(USERNAME, 'test@test.com', USERNAME)
+        normal_guy = get_user_model().objects.create_user(USERNAME, 'test@test.com', USERNAME)
         normal_guy.is_staff = True
         normal_guy.is_active = True
         normal_guy.save()
@@ -540,13 +540,13 @@ class AdminTests(AdminTestsBase):
         self.page = create_page("testpage", "nav_playground.html", "en")
 
     def get_admin(self):
-        usr = User(username="admin", email="admin@django-cms.org", is_staff=True, is_superuser=True)
+        usr = get_user_model()(username="admin", email="admin@django-cms.org", is_staff=True, is_superuser=True)
         usr.set_password("admin")
         usr.save()
         return usr
 
     def get_permless(self):
-        usr = User(username="permless", email="permless@django-cms.org", is_staff=True)
+        usr = get_user_model()(username="permless", email="permless@django-cms.org", is_staff=True)
         usr.set_password("permless")
         usr.save()
         return usr
@@ -804,7 +804,7 @@ class PluginPermissionTests(AdminTestsBase):
         self._placeholder = self._page.placeholders.all()[0]
 
     def _get_admin(self):
-        admin = User(
+        admin = get_user_model()(
             username='admin',
             email='admin@admin.com',
             is_active=True,
@@ -930,7 +930,7 @@ class PluginPermissionTests(AdminTestsBase):
         self.assertEqual(response.status_code, HttpResponse.status_code)
 
     def test_page_permission_inline_visibility(self):
-        user = User(username='user', email='user@domain.com', password='user',
+        user = get_user_model()(username='user', email='user@domain.com', password='user',
                     is_staff=True)
         user.save()
         self._give_page_permssion_rights(user)
@@ -1103,6 +1103,7 @@ class AdminPageEditContentSizeTests(AdminTestsBase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 200)
                 old_response_size = len(response.content)
+                User = get_user_model()
                 old_user_count = User.objects.count()
                 # create additionals user and reload the page
                 User.objects.create(username=USER_NAME, is_active=True)

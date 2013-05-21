@@ -4,7 +4,7 @@ from cms.api import create_page
 from cms.models import Page
 from cms.test_utils.testcases import CMSTestCase
 from cms.test_utils.util.context_managers import SettingsOverride
-from cms.compat import User
+from cms.compat import get_user_model
 from django.contrib.sites.models import Site
 
 class SiteTestCase(CMSTestCase):
@@ -16,7 +16,7 @@ class SiteTestCase(CMSTestCase):
         self.assertEqual(Site.objects.all().count(), 1)
         with SettingsOverride(SITE_ID=1):
 
-            u = User(username="test", is_staff=True, is_active=True, is_superuser=True)
+            u = get_user_model()(username="test", is_staff=True, is_active=True, is_superuser=True)
             u.set_password("test")
             u.save()
 

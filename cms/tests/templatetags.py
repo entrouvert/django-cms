@@ -19,7 +19,7 @@ from django.http import HttpRequest
 from django.template import RequestContext, Context
 from django.template.base import Template
 from django.utils.html import escape
-from django.contrib.auth.models import User
+from django.contrib.auth.models import get_user_model
 
 
 class TemplatetagTests(TestCase):
@@ -82,7 +82,7 @@ class TemplatetagDatabaseTests(TwoPagesFixture, SettingsOverrideTestCase):
         control = self._getfirst()
         request = self.get_request('/')
         request.GET = {"edit": ''}
-        user = User(username="admin", password="admin", is_superuser=True, is_staff=True, is_active=True)
+        user = get_user_model()(username="admin", password="admin", is_superuser=True, is_staff=True, is_active=True)
         user.save()
         request.current_page = control
         request.user = user
@@ -144,7 +144,7 @@ class TemplatetagDatabaseTests(TwoPagesFixture, SettingsOverrideTestCase):
             request = HttpRequest()
             request.REQUEST = {}
             request.session = {}
-            request.user = User()
+            request.user = get_user_model()()
             self.assertRaises(Placeholder.DoesNotExist,
                               _show_placeholder_for_page,
                               RequestContext(request),

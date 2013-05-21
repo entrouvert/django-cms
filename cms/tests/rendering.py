@@ -9,7 +9,7 @@ from cms.plugin_rendering import (render_plugins, PluginContext,
 from cms.test_utils.testcases import SettingsOverrideTestCase
 from cms.test_utils.util.context_managers import SettingsOverride, ChangeModel
 from cms.test_utils.util.mock import AttributeObject
-from cms.compat import User
+from cms.compat import get_user_model
 from django.http import Http404, HttpResponseRedirect
 from django.template import Template, RequestContext
 from sekizai.context import SekizaiContext
@@ -36,7 +36,7 @@ class RenderingTestCase(SettingsOverrideTestCase):
 
     def setUp(self):
         super(RenderingTestCase, self).setUp()
-        self.test_user = User(username="test", is_staff = True, is_active = True, is_superuser = True)
+        self.test_user = get_user_model()(username="test", is_staff = True, is_active = True, is_superuser = True)
         self.test_user.set_password("test")
         self.test_user.save()
         with self.login_user_context(self.test_user):

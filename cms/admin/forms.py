@@ -25,13 +25,13 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _, get_language
 from menus.menu_pool import menu_pool
 
-from cms.compat import User
+from cms.compat import get_user_model
 
 
 
 
 def get_permission_acessor(obj):
-    if isinstance(obj, (PageUser, User,)):
+    if isinstance(obj, (PageUser, get_user_model(),)):
         rel_name = 'user_permissions'
     else:
         rel_name = 'permissions'

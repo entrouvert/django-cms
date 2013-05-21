@@ -20,7 +20,7 @@ from cms.test_utils.util.context_managers import (SettingsOverride,
 from cms.test_utils.util.mock import AttributeObject
 from cms.utils.placeholder import PlaceholderNoAction, MLNGPlaceholderActions
 from cms.utils.plugins import get_placeholders
-from cms.compat import User
+from cms.compat import get_user_model
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.models import Permission
@@ -34,7 +34,7 @@ from django.test import TestCase
 
 class PlaceholderTestCase(CMSTestCase):
     def setUp(self):
-        u = User(username="test", is_staff=True, is_active=True, is_superuser=True)
+        u = get_user_model()(username="test", is_staff=True, is_active=True, is_superuser=True)
         u.set_password("test")
         u.save()
 
@@ -566,7 +566,7 @@ class PlaceholderAdminTest(PlaceholderAdminTestBase):
 
 class PlaceholderPluginPermissionTests(PlaceholderAdminTestBase):
     def _testuser(self):
-        u = User(username="test", is_staff=True, is_active=True, is_superuser=False)
+        u = get_user_model()(username="test", is_staff=True, is_active=True, is_superuser=False)
         u.set_password("test")
         u.save()
         return u
@@ -695,7 +695,7 @@ class PlaceholderConfTests(TestCase):
 
 class PlaceholderI18NTest(CMSTestCase):
     def _testuser(self):
-        u = User(username="test", is_staff=True, is_active=True, is_superuser=True)
+        u = get_user_model()(username="test", is_staff=True, is_active=True, is_superuser=True)
         u.set_password("test")
         u.save()
         return u

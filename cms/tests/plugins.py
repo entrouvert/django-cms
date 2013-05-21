@@ -27,7 +27,7 @@ from cms.utils.copy_plugins import copy_plugins_to
 from django.utils import timezone
 from django.conf import settings
 from django.contrib import admin
-from cms.compat import User
+from cms.compat import get_user_model
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
@@ -51,11 +51,11 @@ class DumbFixturePlugin(CMSPluginBase):
 class PluginsTestBaseCase(CMSTestCase):
 
     def setUp(self):
-        self.super_user = User(username="test", is_staff=True, is_active=True, is_superuser=True)
+        self.super_user = get_user_model()(username="test", is_staff=True, is_active=True, is_superuser=True)
         self.super_user.set_password("test")
         self.super_user.save()
 
-        self.slave = User(username="slave", is_staff=True, is_active=True, is_superuser=False)
+        self.slave = get_user_model()(username="slave", is_staff=True, is_active=True, is_superuser=False)
         self.slave.set_password("slave")
         self.slave.save()
 
@@ -763,11 +763,11 @@ class FileSystemPluginTests(PluginsTestBaseCase):
 class PluginManyToManyTestCase(PluginsTestBaseCase):
 
     def setUp(self):
-        self.super_user = User(username="test", is_staff=True, is_active=True, is_superuser=True)
+        self.super_user = get_user_model()(username="test", is_staff=True, is_active=True, is_superuser=True)
         self.super_user.set_password("test")
         self.super_user.save()
 
-        self.slave = User(username="slave", is_staff=True, is_active=True, is_superuser=False)
+        self.slave = get_user_model()(username="slave", is_staff=True, is_active=True, is_superuser=False)
         self.slave.set_password("slave")
         self.slave.save()
 

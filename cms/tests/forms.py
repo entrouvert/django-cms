@@ -8,7 +8,7 @@ from cms.forms.utils import (get_site_choices, get_page_choices,
     update_site_and_page_choices)
 from cms.test_utils.testcases import CMSTestCase
 from cms.test_utils.util.context_managers import SettingsOverride
-from cms.compat import User
+from cms.compat import get_user_model
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 
@@ -38,7 +38,7 @@ class FormsTestCase(CMSTestCase):
 
     def test_get_site_choices_without_moderator_with_superuser(self):
         # boilerplate (creating a page)
-        user_super = User(username="super", is_staff=True, is_active=True,
+        user_super = get_user_model()(username="super", is_staff=True, is_active=True,
             is_superuser=True)
         user_super.set_password("super")
         user_super.save()
@@ -73,7 +73,7 @@ class FormsTestCase(CMSTestCase):
 
     def test_compress_function_gets_a_page_when_one_exists(self):
         # boilerplate (creating a page)
-        user_super = User(username="super", is_staff=True, is_active=True,
+        user_super = get_user_model()(username="super", is_staff=True, is_active=True,
                           is_superuser=True)
         user_super.set_password("super")
         user_super.save()
@@ -118,7 +118,7 @@ class FormsTestCase(CMSTestCase):
         self.assertEquals(normal_result, list(lazy_result))
 
     def test_page_user_form_initial(self):
-        myuser = User.objects.create_superuser("myuser", "myuser@django-cms.org", "myuser")
+        myuser = get_user_model().objects.create_superuser("myuser", "myuser@django-cms.org", "myuser")
         user = create_page_user(myuser, myuser, grant_all=True)
         puf = PageUserForm(instance=user)
         names = ['can_add_page', 'can_change_page', 'can_delete_page',

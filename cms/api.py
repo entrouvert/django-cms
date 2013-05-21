@@ -17,7 +17,7 @@ from django.db.models import Max
 from django.template.defaultfilters import slugify
 from menus.menu_pool import menu_pool
 
-from cms.compat import User
+from cms.compat import get_user_model
 from cms.admin.forms import save_permissions
 from cms.app_base import CMSApp
 from cms.apphook_pool import apphook_pool
@@ -118,7 +118,7 @@ def create_page(title, template, language, menu_title=None, slug=None,
     See docs/extending_cms/api_reference.rst for more info
     """
     # ugly permissions hack
-    if created_by and isinstance(created_by, User):
+    if created_by and isinstance(created_by, get_user_model()):
         _thread_locals.user = created_by
         created_by = created_by.username
     else:
@@ -306,7 +306,7 @@ def create_page_user(created_by, user,
                                 True, True, True, True, True, True, True)
     
     # validate created_by
-    assert isinstance(created_by, User)
+    assert isinstance(created_by, get_user_model())
     
     data = {
         'can_add_page': can_add_page, 
@@ -324,7 +324,7 @@ def create_page_user(created_by, user,
     user.is_staff = True
     user.is_active = True
     page_user = PageUser(created_by=created_by)
-    for field in [f.name for f in User._meta.local_fields]:
+    for field in [f.name for f in get_user_model()._meta.local_fields]:
         setattr(page_user, field, getattr(user, field))
     user.save()
     page_user.save()

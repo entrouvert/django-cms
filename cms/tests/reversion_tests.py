@@ -10,7 +10,7 @@ from cms.test_utils.testcases import CMSTestCase, URL_CMS_PAGE, URL_CMS_PAGE_CHA
     URL_CMS_PLUGIN_ADD, URL_CMS_PLUGIN_EDIT
 from cms.test_utils.util.context_managers import SettingsOverride
 from django.conf import settings
-from cms.compat import User
+from cms.compat import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
 from os.path import join
@@ -20,7 +20,7 @@ from reversion.models import Revision, Version, VERSION_CHANGE
 
 class BasicReversionTestCase(CMSTestCase):
     def setUp(self):
-        u = User(username="test", is_staff=True, is_active=True,
+        u = get_user_model()(username="test", is_staff=True, is_active=True,
                  is_superuser=True)
         u.set_password("test")
         u.save()
@@ -40,7 +40,7 @@ class BasicReversionTestCase(CMSTestCase):
 
 class ReversionTestCase(CMSTestCase):
     def setUp(self):
-        u = User(username="test", is_staff=True, is_active=True,
+        u = get_user_model()(username="test", is_staff=True, is_active=True,
                  is_superuser=True)
         u.set_password("test")
         u.save()
@@ -87,7 +87,7 @@ class ReversionTestCase(CMSTestCase):
         """
         Test that you can revert a plugin
         """
-        with self.login_user_context(User.objects.get(username="test")):
+        with self.login_user_context(get_user_model().objects.get(username="test")):
             self.assertEquals(Page.objects.all().count(), 2)
             self.assertEquals(Title.objects.all().count(), 2)
             self.assertEquals(CMSPlugin.objects.all().count(), 2)
@@ -122,7 +122,7 @@ class ReversionTestCase(CMSTestCase):
         """
         Test that you can recover a page
         """
-        with self.login_user_context(User.objects.get(username="test")):
+        with self.login_user_context(get_user_model().objects.get(username="test")):
             self.assertEquals(Revision.objects.all().count(), 5)
             ctype = ContentType.objects.get_for_model(Page)
             revision = Revision.objects.all()[4]
@@ -156,7 +156,7 @@ class ReversionTestCase(CMSTestCase):
             self.assertEquals(Text.objects.all().count(), 1)
 
     def test_publish(self):
-        with self.login_user_context(User.objects.get(username="test")):
+        with self.login_user_context(get_user_model().objects.get(username="test")):
             page = Page.objects.all()[0]
             page_pk = page.pk
             self.assertEquals(Revision.objects.all().count(), 5)
@@ -166,7 +166,7 @@ class ReversionTestCase(CMSTestCase):
             self.assertEquals(Revision.objects.all().count(), 2)
 
     def test_publish_limit(self):
-        with self.login_user_context(User.objects.get(username="test")):
+        with self.login_user_context(get_user_model().objects.get(username="test")):
             with SettingsOverride(CMS_MAX_PAGE_PUBLISH_REVERSIONS=5):
                 page = Page.objects.all()[0]
                 page_pk = page.pk

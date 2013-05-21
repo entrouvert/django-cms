@@ -14,7 +14,7 @@ from cms.utils.conf import get_languages
 from django.conf import settings
 from django.contrib.sites.models import Site
 
-from cms.compat import User
+from cms.compat import get_user_model
 from django.http import Http404, HttpResponseRedirect
 
 TEMPLATE_NAME = 'tests/rendering/base.html'
@@ -134,7 +134,7 @@ class MultilingualTestCase(SettingsOverrideTestCase):
         add_plugin(placeholder, "TextPlugin", TESTLANG, body="test")
         self.assertEqual(placeholder.cmsplugin_set.filter(language=TESTLANG2).count(), 1)
         self.assertEqual(placeholder.cmsplugin_set.filter(language=TESTLANG).count(), 1)
-        user = User.objects.create_superuser('super', 'super@django-cms.org', 'super')
+        user = get_user_model().objects.create_superuser('super', 'super@django-cms.org', 'super')
         page = publish_page(page, user)
         public = page.publisher_public
         placeholder = public.placeholders.all()[0]
@@ -193,7 +193,7 @@ class MultilingualTestCase(SettingsOverrideTestCase):
                 method='GET',
                 COOKIES={},
                 META={},
-                user=User(),
+                user=get_user_model()(),
             )
             self.assertRaises(Http404, details, request, '')
 
@@ -223,7 +223,7 @@ class MultilingualTestCase(SettingsOverrideTestCase):
                 method='GET',
                 COOKIES={},
                 META={},
-                user=User(),
+                user=get_user_model()(),
             )
 
             response = details(request, '')

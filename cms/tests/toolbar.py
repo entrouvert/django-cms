@@ -6,7 +6,7 @@ from cms.test_utils.util.context_managers import SettingsOverride
 from cms.toolbar.items import (Anchor, TemplateHTML, Switcher, List, ListItem, 
     GetButton)
 from cms.utils import get_cms_setting
-from cms.compat import User
+from cms.compat import get_user_model
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, Permission
 from django.core.urlresolvers import reverse
@@ -28,7 +28,7 @@ class ToolbarTestBase(SettingsOverrideTestCase):
         return AnonymousUser()
 
     def get_staff(self):
-        staff = User(
+        staff = get_user_model()(
             username='staff',
             email='staff@staff.org',
             is_active=True,
@@ -40,7 +40,7 @@ class ToolbarTestBase(SettingsOverrideTestCase):
         return staff
 
     def get_nonstaff(self):
-        nonstaff = User(
+        nonstaff = get_user_model()(
             username='nonstaff',
             email='nonstaff@staff.org',
             is_active=True,
@@ -52,7 +52,7 @@ class ToolbarTestBase(SettingsOverrideTestCase):
         return nonstaff
 
     def get_superuser(self):
-        superuser = User(
+        superuser = get_user_model()(
             username='superuser',
             email='superuser@superuser.org',
             is_active=True,

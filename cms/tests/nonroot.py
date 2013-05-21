@@ -5,7 +5,7 @@ from cms.models import Page
 from cms.test_utils.testcases import CMSTestCase
 from cms.test_utils.util.context_managers import SettingsOverride
 from cms.utils.i18n import force_language
-from cms.compat import User
+from cms.compat import get_user_model
 from django.middleware.locale import LocaleMiddleware
 from django.template import Template
 from menus.base import NavigationNode
@@ -17,7 +17,7 @@ class NonRootCase(CMSTestCase):
     urls = 'cms.test_utils.project.nonroot_urls'
 
     def setUp(self):
-        u = User(username="test", is_staff = True, is_active = True, is_superuser = True)
+        u = get_user_model()(username="test", is_staff = True, is_active = True, is_superuser = True)
         u.set_password("test")
         u.save()
         with self.login_user_context(u):
