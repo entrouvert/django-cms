@@ -8,7 +8,7 @@ from cms.utils.helpers import classproperty
 from cms.utils.permissions import get_user_permission_level
 from copy import deepcopy
 from django.contrib import admin
-from django.contrib.auth.models import get_user_nodel
+from cms.compat import get_user_model
 from django.template.defaultfilters import title
 from django.utils.translation import ugettext as _
 

@@ -4,7 +4,6 @@ from cms.test_utils.util.context_managers import (UserLoginContext,
     SettingsOverride)
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
-from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -18,6 +17,7 @@ import sys
 import urllib
 import warnings
 from cms.utils.permissions import set_current_user
+from cms.compat import get_user_model
 
 
 URL_CMS_PAGE = "/en/admin/cms/page/"
