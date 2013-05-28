@@ -6,10 +6,10 @@ from django.core.urlresolvers import get_resolver, get_script_prefix, \
 from django.utils.encoding import iri_to_uri
 from moderatormodels import *
 from pagemodel import *
+from titlemodels import *
 from permissionmodels import *
 from placeholdermodel import *
 from pluginmodel import *
-from titlemodels import *
 import django.core.urlresolvers
 # must be last
 from cms import signals as s_import
